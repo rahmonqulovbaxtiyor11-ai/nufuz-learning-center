@@ -1,0 +1,363 @@
+/**
+ * ALL editable site content lives here, in two languages.
+ * Replace names, scores, photos and texts freely — the layout adapts.
+ */
+
+export type Lang = "uz" | "en";
+
+export const CONTACT = {
+  phone: "+998 91 234 56 78",
+  phoneHref: "tel:+998912345678",
+  telegram: "https://t.me/nufuz_lc",
+  instagram: "https://instagram.com/nufuz_lc",
+  addressUz: "Gijduvon tumani, Buxoro viloyati, O‘zbekiston",
+  addressEn: "Gijduvon district, Bukhara region, Uzbekistan",
+  mapEmbed:
+    "https://www.openstreetmap.org/export/embed.html?bbox=64.62%2C40.07%2C64.72%2C40.13&layer=mapnik&marker=40.1017%2C64.6742",
+};
+
+/** Student results showcase — replace with real students. */
+export const RESULTS = [
+  { name: "Nilufar Qodirova", exam: "IELTS", score: "8.0", detail: "L 8.5 · R 8.5 · W 7.5 · S 7.5", from: "6.0", uni: { uz: "Toshkent, WIUT", en: "WIUT, Tashkent" } },
+  { name: "Islom Karimov", exam: "IELTS", score: "9.0", detail: "L 9.0 · R 9.0 · W 9.0 · S 9.0", from: "6.5", uni: { uz: "Buxoro davlat universiteti", en: "Bukhara State University" } },
+  { name: "Zilola Ergasheva", exam: "Multilevel", score: "C1", detail: "68.5 / 75", from: "B1", uni: { uz: "TDIU grant", en: "TSUE, state grant" } },
+  { name: "Asadbek Umarov", exam: "IELTS", score: "7.0", detail: "L 7.5 · R 7.5 · W 6.5 · S 6.5", from: "5.0", uni: { uz: "Xorijiy stipendiya", en: "Overseas scholarship" } },
+  { name: "Malika Sattorova", exam: "Multilevel", score: "C1", detail: "71 / 75", from: "B2", uni: { uz: "O‘zbekiston jurnalistika universiteti", en: "University of Journalism" } },
+  { name: "Ibrohim Latipov", exam: "IELTS", score: "8.5", detail: "L 9.0 · R 9.0 · W 8.0 · S 8.0", from: "6.5", uni: { uz: "Chevening nomzodi", en: "Chevening candidate" } },
+  { name: "Shirinabonu Aziz", exam: "Multilevel", score: "B2", detail: "58 / 75", from: "A2", uni: { uz: "Buxoro pedagogika instituti", en: "Bukhara Pedagogical Institute" } },
+  { name: "Kamron Yo‘ldoshev", exam: "IELTS", score: "7.5", detail: "L 8.5 · R 8.0 · W 7.0 · S 6.5", from: "6.0", uni: { uz: "SAT 1490 · AQSh", en: "SAT 1490 · USA" } },
+];
+
+export const STATS = [
+  { value: "3000+", uz: "bitiruvchi o‘quvchi", en: "learners taught" },
+  { value: "500+", uz: "o‘quvchi IELTS 7.0+", en: "students at IELTS 7.0+" },
+  { value: "94%", uz: "maqsad ballga erishish", en: "reach their target score" },
+  { value: "2020", uz: "yildan beri Gijduvonda", en: "serving Gijduvon since" },
+];
+
+export const dict = {
+  uz: {
+    brand: "NUFUZ",
+    brandSub: "LEARNING CENTER",
+    nav: {
+      programs: "Kurslar",
+      results: "Natijalar",
+      teachers: "O‘qituvchilar",
+      about: "Biz haqimizda",
+      faq: "Savollar",
+      contact: "Aloqa",
+      cta: "Ro‘yxatdan o‘tish",
+    },
+    hero: {
+      badge: "2020 yildan beri · Gijduvon",
+      titleA: "Nufuzli ta’lim,",
+      titleB: "nufuzli natija",
+      lead:
+        "IELTS va Multilevel (CEFR) bo‘yicha kichik guruhlarda ishlaymiz. Har bir o‘quvchi uchun shaxsiy o‘quv reja, haftalik mock imtihon va aniq maqsad bali.",
+      ctaPrimary: "Sinov darsiga yozilish",
+      ctaSecondary: "Kurslarni ko‘rish",
+      note: "Birinchi dars bepul · Guruhlar 8-12 o‘quvchi",
+      cardTitle: "Yaqin guruhlar",
+      cardRows: [
+        { k: "IELTS Intensive", v: "Dush–Shan · 3 oy" },
+        { k: "Multilevel B2→C1", v: "Sesh–Pay–Shan · 4 oy" },
+        { k: "General English", v: "Kunlik guruhlar" },
+      ],
+    },
+    programsTitle: "Kurslar",
+    programsLead: "Asosiy yo‘nalishimiz — IELTS va Multilevel. Qolgan kurslar shu ikkisiga tayyorgarlik bo‘lib xizmat qiladi.",
+    programs: [
+      {
+        tag: "Asosiy yo‘nalish",
+        name: "IELTS 6.5–8.0",
+        desc: "Akademik IELTS: 4 ko‘nikma bo‘yicha strategiya, Writing’ga har hafta shaxsiy fikr-mulohaza, Speaking uchun juftlikda mashg‘ulot.",
+        points: ["3 oylik intensiv modul", "Haftada 2 ta to‘liq mock", "Writing tahlili — 48 soat ichida", "Guruh: 8-12 o‘quvchi"],
+        meta: "3 oy · haftada 3 kun",
+      },
+      {
+        tag: "Asosiy yo‘nalish",
+        name: "Multilevel / CEFR B2–C1",
+        desc: "Milliy sertifikat imtihoni formati: vaqt boshqaruvi, javob varaqasi bilan ishlash, yozma qism uchun tayyor tuzilmalar.",
+        points: ["B1 → B2 → C1 bosqichma-bosqich", "Har blokda darajali test", "Grammatika minimumi va kurs kitobi", "Grant uchun maxsus mashqlar"],
+        meta: "4 oy · haftada 3 kun",
+      },
+      {
+        tag: "Tayyorgarlik",
+        name: "General English A1–B1",
+        desc: "Noldan mustahkam asos: talaffuz, so‘z boyligi va gapirish odati. Kurs oxirida IELTS yoki Multilevel guruhiga o‘tasiz.",
+        points: ["Kichik guruhlar", "Har oy daraja testi", "Klub darslari (speaking)"],
+        meta: "6 oy · haftada 3 kun",
+      },
+      {
+        tag: "Qo‘shimcha",
+        name: "SAT & Mock markazi",
+        desc: "SAT matematika va verbal bloklari, shuningdek tashqi o‘quvchilar uchun professional mock imtihon xizmati.",
+        points: ["Haqiqiy format va vaqt", "Batafsil ball tahlili", "Individual maslahat"],
+        meta: "Moslashuvchan jadval",
+      },
+    ],
+    resultsTitle: "O‘quvchilarimiz natijalari",
+    resultsLead: "Har bir karta — haqiqiy imtihon sessiyasidan olingan ball. Siz ham keyingi bo‘lishingiz mumkin.",
+    resultsFrom: "boshlang‘ich",
+    resultsFilterAll: "Barchasi",
+    teachersTitle: "O‘qituvchilar",
+    teachersLead: "Har bir ustoz o‘z imtihon balini topshirib, natijasini isbotlagan.",
+    teacherAchievement: "Shaxsiy natija",
+    teacherStudents: "O‘quvchi natijalari",
+    aboutTitle: "Biz haqimizda",
+    aboutLead: "“Nufuzli oliygoh, nufuzli ta’lim, nufuzli inson”",
+    aboutBody: [
+      "NUFUZ 2020 yilda Gijduvonda kichik bir sinfxonada boshlandi. Bugun markazimizda IELTS, Multilevel, SAT va General English yo‘nalishlari bo‘yicha 3000 dan ortiq o‘quvchi tahsil oldi.",
+      "Bizning uslub oddiy: kichik guruh, o‘lchanadigan maqsad va haftalik nazorat. O‘quvchi kursga kirganida joriy darajasi aniqlanadi, so‘ng maqsad ballga qadar aniq yo‘l xaritasi tuziladi.",
+    ],
+    aboutPoints: [
+      { t: "Kichik guruhlar", d: "8-12 o‘quvchi — har kimga gapirish vaqti tegadi." },
+      { t: "Professional mock", d: "Haqiqiy imtihon sharoiti, rasmiy vaqt va baholash." },
+      { t: "Shaxsiy reja", d: "Har o‘quvchi uchun haftalik vazifa va progress jadvali." },
+      { t: "Ota-onalar bilan aloqa", d: "Oyda bir marta hisobot va ochiq dars." },
+    ],
+    testimonialsTitle: "O‘quvchilar fikri",
+    faqTitle: "Ko‘p so‘raladigan savollar",
+    faq: [
+      { q: "Darslar qanday jadvalda bo‘ladi?", a: "Guruhlar haftada 3 kun, har dars 90 daqiqa. Ertalabki, kunduzgi va kechki guruhlar mavjud — maktab yoki ish jadvalingizga moslashamiz." },
+      { q: "Noldan boshlasam ham IELTS’ga tayyorlanamanmi?", a: "Ha. Avval General English (A1–B1) bosqichini o‘taysiz, so‘ng IELTS guruhiga qo‘shilasiz. O‘rtacha yo‘l 9–12 oy." },
+      { q: "Guruhga qo‘shilishdan oldin test topshirish kerakmi?", a: "Ha, bepul daraja aniqlash testi va qisqa suhbat o‘tkazamiz. Shundan keyin sizga mos guruh taklif qilinadi." },
+      { q: "Mock imtihon kimlar uchun?", a: "Markaz o‘quvchilari uchun kursga kiritilgan. Tashqi o‘quvchilar ham alohida ro‘yxatdan o‘tib qatnashishi mumkin." },
+      { q: "To‘lov qanday amalga oshiriladi?", a: "Oylik to‘lov, naqd yoki bank kartasi orqali. Aka-uka/opa-singil va yuqori natija ko‘rsatgan o‘quvchilar uchun chegirmalar bor." },
+    ],
+    contactTitle: "Bizni toping",
+    contactLead: "Gijduvon markazida joylashganmiz. Kelib ko‘ring yoki qo‘ng‘iroq qiling.",
+    formName: "Ismingiz",
+    formPhone: "Telefon raqamingiz",
+    formCourse: "Qiziqtirgan kurs",
+    formSubmit: "Ariza yuborish",
+    formDone: "Rahmat! Tez orada qo‘ng‘iroq qilamiz.",
+    ctaTitle: "Keyingi natija sizning bo‘lsin",
+    ctaLead: "Bepul daraja aniqlash testi va sinov darsiga yoziling — joylar cheklangan.",
+    footerRights: "Barcha huquqlar himoyalangan.",
+    langLabel: "Til",
+  },
+  en: {
+    brand: "NUFUZ",
+    brandSub: "LEARNING CENTER",
+    nav: {
+      programs: "Programs",
+      results: "Results",
+      teachers: "Teachers",
+      about: "About",
+      faq: "FAQ",
+      contact: "Contact",
+      cta: "Enrol now",
+    },
+    hero: {
+      badge: "Since 2020 · Gijduvon",
+      titleA: "Serious teaching,",
+      titleB: "serious scores",
+      lead:
+        "IELTS and Multilevel (CEFR) preparation in small groups. Every student gets a personal study plan, weekly mock exams and one clear target score.",
+      ctaPrimary: "Book a free trial lesson",
+      ctaSecondary: "See programs",
+      note: "First lesson free · Groups of 8-12",
+      cardTitle: "Upcoming groups",
+      cardRows: [
+        { k: "IELTS Intensive", v: "Mon–Sat · 3 months" },
+        { k: "Multilevel B2→C1", v: "Tue–Thu–Sat · 4 months" },
+        { k: "General English", v: "Daily groups" },
+      ],
+    },
+    programsTitle: "Programs",
+    programsLead: "IELTS and Multilevel are our core tracks. Everything else feeds into them.",
+    programs: [
+      {
+        tag: "Core track",
+        name: "IELTS 6.5–8.0",
+        desc: "Academic IELTS: strategy for all four skills, weekly personal feedback on writing, paired speaking drills every lesson.",
+        points: ["3-month intensive module", "Two full mocks per week", "Writing feedback within 48 hours", "Groups of 8-12"],
+        meta: "3 months · 3 days a week",
+      },
+      {
+        tag: "Core track",
+        name: "Multilevel / CEFR B2–C1",
+        desc: "Built around the national certificate format: timing, answer-sheet practice and reusable structures for the written part.",
+        points: ["B1 → B2 → C1 step by step", "Level test after every block", "Grammar minimum + course book", "Extra drills for state grants"],
+        meta: "4 months · 3 days a week",
+      },
+      {
+        tag: "Foundation",
+        name: "General English A1–B1",
+        desc: "A solid base from zero: pronunciation, vocabulary and the habit of speaking. You graduate straight into an IELTS or Multilevel group.",
+        points: ["Small groups", "Monthly level test", "Speaking club sessions"],
+        meta: "6 months · 3 days a week",
+      },
+      {
+        tag: "Extra",
+        name: "SAT & mock centre",
+        desc: "SAT math and verbal blocks, plus professional mock exams open to students from outside the centre.",
+        points: ["Real format and timing", "Detailed score breakdown", "One-to-one debrief"],
+        meta: "Flexible schedule",
+      },
+    ],
+    resultsTitle: "Our students, real scores",
+    resultsLead: "Every card is a score from an official exam session. You could be next.",
+    resultsFrom: "started at",
+    resultsFilterAll: "All",
+    teachersTitle: "The teachers",
+    teachersLead: "Every teacher has sat the exam themselves and can prove the score.",
+    teacherAchievement: "Own result",
+    teacherStudents: "Student results",
+    aboutTitle: "About NUFUZ",
+    aboutLead: "“A respected university, respected education, a respected person.”",
+    aboutBody: [
+      "NUFUZ opened in 2020 in a single classroom in Gijduvon. Today more than 3,000 students have studied IELTS, Multilevel, SAT and General English with us.",
+      "The method is simple: small groups, a measurable target and weekly checkpoints. Every student is placed by level on day one, then follows a roadmap to their target score.",
+    ],
+    aboutPoints: [
+      { t: "Small groups", d: "8-12 students, so everyone actually speaks." },
+      { t: "Professional mocks", d: "Real exam conditions, official timing and marking." },
+      { t: "Personal plans", d: "Weekly tasks and a progress sheet per student." },
+      { t: "Parents in the loop", d: "Monthly report and an open lesson." },
+    ],
+    testimonialsTitle: "What students say",
+    faqTitle: "Frequently asked questions",
+    faq: [
+      { q: "What does the timetable look like?", a: "Groups run three days a week, 90 minutes per lesson, with morning, afternoon and evening options to fit school or work." },
+      { q: "Can I reach IELTS if I start from zero?", a: "Yes. You begin in General English (A1–B1) and then move into an IELTS group. The typical path takes 9–12 months." },
+      { q: "Do I need a test before joining?", a: "Yes — a free placement test and a short interview, after which we recommend the right group." },
+      { q: "Who can take the mock exams?", a: "They are included for our students, and external candidates can register for a session separately." },
+      { q: "How does payment work?", a: "Monthly, in cash or by bank card. We offer discounts for siblings and for students with top results." },
+    ],
+    contactTitle: "Find us",
+    contactLead: "We are in the centre of Gijduvon. Drop in or give us a call.",
+    formName: "Your name",
+    formPhone: "Phone number",
+    formCourse: "Course you want",
+    formSubmit: "Send request",
+    formDone: "Thank you! We will call you shortly.",
+    ctaTitle: "Let the next result be yours",
+    ctaLead: "Book a free placement test and trial lesson — seats are limited.",
+    footerRights: "All rights reserved.",
+    langLabel: "Language",
+  },
+} as const;
+
+export const TEACHERS = [
+  {
+    key: "t1",
+    achievement: "IELTS 8.5",
+    uz: {
+      name: "Dilnoza Karimova",
+      role: "IELTS Writing & Reading",
+      bio: "6 yil davomida IELTS o‘qitadi. Writing bo‘yicha uslubiy qo‘llanmasi markazning barcha guruhlarida ishlatiladi.",
+      students: "40+ o‘quvchi 7.5+ ball",
+      quote: "“Dilnoza opa Writing’ni qayta o‘rgatdi — 6.0 dan 7.5 ga ikki oyda chiqdim.”",
+      quoteBy: "Zarina M. · IELTS 7.5",
+    },
+    en: {
+      name: "Dilnoza Karimova",
+      role: "IELTS Writing & Reading",
+      bio: "Six years of IELTS teaching. Her writing framework is now used across every group in the centre.",
+      students: "40+ students at 7.5+",
+      quote: "“Dilnoza rebuilt my writing from scratch — 6.0 to 7.5 in two months.”",
+      quoteBy: "Zarina M. · IELTS 7.5",
+    },
+  },
+  {
+    key: "t2",
+    achievement: "IELTS 8.0",
+    uz: {
+      name: "Sanjar Qo‘chqorov",
+      role: "Asoschi · IELTS Speaking",
+      bio: "NUFUZ asoschisi. Speaking va imtihon strategiyasi bo‘yicha dars beradi, mock imtihonlar tizimini yo‘lga qo‘ygan.",
+      students: "300+ o‘quvchi 7.0+ ball",
+      quote: "“Sanjar aka bilan Speaking qo‘rquvi yo‘qoldi. Imtihonda 8.0 oldim.”",
+      quoteBy: "Ibrohim L. · IELTS 8.5",
+    },
+    en: {
+      name: "Sanjar Qo‘chqorov",
+      role: "Founder · IELTS Speaking",
+      bio: "Founder of NUFUZ. He teaches speaking and exam strategy, and built the centre's mock exam system.",
+      students: "300+ students at 7.0+",
+      quote: "“With Sanjar the fear of speaking simply went away. I got 8.0 on the day.”",
+      quoteBy: "Ibrohim L. · IELTS 8.5",
+    },
+  },
+  {
+    key: "t3",
+    achievement: "CEFR C2",
+    uz: {
+      name: "Kamola Nazarova",
+      role: "Multilevel / CEFR",
+      bio: "Milliy sertifikat imtihoni formati bo‘yicha mutaxassis. B1 dan C1 gacha bosqichli tizimni ishlab chiqqan.",
+      students: "120+ o‘quvchi C1 darajasi",
+      quote: "“Kamola opaning bloklari tufayli Multilevel’da C1 oldim va grantga o‘tdim.”",
+      quoteBy: "Zilola E. · Multilevel C1",
+    },
+    en: {
+      name: "Kamola Nazarova",
+      role: "Multilevel / CEFR",
+      bio: "Specialist in the national certificate format and author of our B1-to-C1 block system.",
+      students: "120+ students at C1",
+      quote: "“Her blocks got me a C1 in Multilevel — and a state grant.”",
+      quoteBy: "Zilola E. · Multilevel C1",
+    },
+  },
+  {
+    key: "t4",
+    achievement: "SAT 1520",
+    uz: {
+      name: "Aziz Toshpo‘latov",
+      role: "SAT & Academic English",
+      bio: "SAT matematika va verbal bloklarini o‘qitadi, xorijiy universitetlarga hujjat topshirishda maslahat beradi.",
+      students: "25+ o‘quvchi SAT 1400+",
+      quote: "“Aziz aka SAT’ni bo‘lib-bo‘lib tushuntirdi. 1490 ball oldim.”",
+      quoteBy: "Kamron Y. · SAT 1490",
+    },
+    en: {
+      name: "Aziz Toshpo‘latov",
+      role: "SAT & Academic English",
+      bio: "Teaches SAT math and verbal blocks and advises students applying to universities abroad.",
+      students: "25+ students at SAT 1400+",
+      quote: "“He broke the SAT down section by section. I scored 1490.”",
+      quoteBy: "Kamron Y. · SAT 1490",
+    },
+  },
+  {
+    key: "t5",
+    achievement: "IELTS 7.5",
+    uz: {
+      name: "Gulnoza Rahimova",
+      role: "General English · A1–B1",
+      bio: "Noldan boshlovchilar bilan ishlaydi. Talaffuz va so‘z boyligi bo‘yicha kunlik mashqlar tizimi muallifi.",
+      students: "600+ boshlovchi B1 darajasiga",
+      quote: "“Inglizchani nolda boshlagandim. Bir yilda IELTS guruhiga o‘tdim.”",
+      quoteBy: "Asadbek U. · IELTS 7.0",
+    },
+    en: {
+      name: "Gulnoza Rahimova",
+      role: "General English · A1–B1",
+      bio: "Works with complete beginners and designed our daily pronunciation and vocabulary drills.",
+      students: "600+ beginners taken to B1",
+      quote: "“I started with no English at all. A year later I was in an IELTS group.”",
+      quoteBy: "Asadbek U. · IELTS 7.0",
+    },
+  },
+];
+
+export const TESTIMONIALS = [
+  {
+    uz: { text: "Guruh kichik bo‘lgani uchun har darsda gapiraman. Ustozlar xatolarni darhol tuzatadi.", by: "Nilufar Q.", meta: "IELTS 8.0" },
+    en: { text: "The group is small enough that I speak in every lesson, and mistakes get corrected on the spot.", by: "Nilufar Q.", meta: "IELTS 8.0" },
+  },
+  {
+    uz: { text: "Haftalik mock imtihonlar imtihon kunidagi hayajonni yo‘qotdi. Hammasi tanish edi.", by: "Javohir R.", meta: "IELTS 7.5" },
+    en: { text: "The weekly mocks removed all the exam-day nerves. Everything felt familiar.", by: "Javohir R.", meta: "IELTS 7.5" },
+  },
+  {
+    uz: { text: "Multilevel’ga tayyorlanish tartibli bordi: har blok oxirida test, natija jadvalda ko‘rinadi.", by: "Malika S.", meta: "Multilevel C1" },
+    en: { text: "Multilevel prep was properly structured: a test after each block and progress you can actually see.", by: "Malika S.", meta: "Multilevel C1" },
+  },
+  {
+    uz: { text: "Ota-onam ham oylik hisobotlarni ko‘rib turdi, shuning uchun uyda ham qo‘llab-quvvatlash bo‘ldi.", by: "Shirinabonu A.", meta: "Multilevel B2" },
+    en: { text: "My parents saw the monthly reports too, so I had support at home as well.", by: "Shirinabonu A.", meta: "Multilevel B2" },
+  },
+];
