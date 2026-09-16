@@ -672,10 +672,11 @@ export function Contact() {
   onInput={(e) => {
     let input = e.currentTarget;
     let val = input.value;
-    if (!val.startsWith("+998")) {
-      input.value = "+998 ";
-      return;
-    }
+   if (!val.startsWith("+998 ")) {
+  input.value = "+998 ";
+  input.setSelectionRange(5, 5);
+  return;
+}
     let digits = val.slice(5).replace(/\D/g, "").slice(0, 9);
     let res = "+998";
     if (digits.length > 0) res += " " + digits.slice(0, 2);
