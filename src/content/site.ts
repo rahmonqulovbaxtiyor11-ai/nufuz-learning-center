@@ -6,8 +6,8 @@
 export type Lang = "uz" | "en";
 
 export const CONTACT = {
-  phone: "+998 91 234 56 78",
-  phoneHref: "tel:+998912345678",
+  phone: "+998 91 414 10 21",
+  phoneHref: "tel:+998914141021",
   telegram: "https://t.me/nufuz_lc",
   instagram: "https://instagram.com/nufuz_lc",
   addressUz: "Gijduvon tumani, Buxoro viloyati, O‘zbekiston",
