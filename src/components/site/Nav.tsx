@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { CONTACT } from "@/content/site";
-import mark from "@/assets/Nufuz-lc1.png";
+import mark from "@/assets/Nufuz-lc2.png";
 
 export function Nav() {
   const { t, lang, setLang } = useLang();
