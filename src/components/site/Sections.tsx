@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowUpRight,
   Check,
@@ -30,6 +30,111 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
       <Sparkles className="h-3 w-3" />
       {children}
     </span>
+  );
+}
+
+function ManualCarousel({
+  children,
+  trackClassName,
+  className = "",
+}: {
+  children: React.ReactNode;
+  trackClassName: string;
+  className?: string;
+}) {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef({ pointerId: -1, startX: 0, startScrollLeft: 0 });
+
+  const pauseTrack = () => {
+    if (trackRef.current) trackRef.current.style.animationPlayState = "paused";
+  };
+
+  const resumeTrack = () => {
+    if (trackRef.current) trackRef.current.style.animationPlayState = "";
+  };
+
+  const normalizeScrollPosition = () => {
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
+    if (!viewport || !track) return;
+
+    const loopWidth = track.scrollWidth / 2;
+    if (loopWidth <= viewport.clientWidth) return;
+
+    if (viewport.scrollLeft <= 0) {
+      viewport.scrollLeft += loopWidth;
+    } else if (viewport.scrollLeft >= loopWidth) {
+      viewport.scrollLeft -= loopWidth;
+    }
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startScrollLeft: viewport.scrollLeft,
+    };
+    viewport.setPointerCapture(event.pointerId);
+    pauseTrack();
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    const viewport = viewportRef.current;
+    if (drag.pointerId !== event.pointerId || !viewport) return;
+
+    viewport.scrollLeft = drag.startScrollLeft - (event.clientX - drag.startX);
+    normalizeScrollPosition();
+  };
+
+  const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const horizontalDelta = event.deltaX || event.deltaY;
+    if (horizontalDelta === 0) return;
+
+    event.preventDefault();
+    pauseTrack();
+    viewport.scrollLeft += horizontalDelta;
+    normalizeScrollPosition();
+    window.requestAnimationFrame(normalizeScrollPosition);
+    resumeTrack();
+  };
+
+  const endDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    const viewport = viewportRef.current;
+    if (drag.pointerId !== event.pointerId) return;
+
+    if (viewport?.hasPointerCapture(event.pointerId)) {
+      viewport.releasePointerCapture(event.pointerId);
+    }
+    dragRef.current.pointerId = -1;
+    resumeTrack();
+  };
+
+  return (
+    <div
+      ref={viewportRef}
+      className={`marquee-viewport cursor-grab overflow-x-auto select-none active:cursor-grabbing ${className}`}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onWheel={handleWheel}
+      onScroll={normalizeScrollPosition}
+    >
+      <div ref={trackRef} className={trackClassName}>
+        {children}
+      </div>
+    </div>
   );
 }
 
@@ -293,15 +398,13 @@ export function Results() {
   );
 
   const renderResultRow = (items: typeof RESULTS, reverse = false) => (
-    <div className="marquee-viewport">
-      <div className={`marquee-track ${reverse ? "marquee-track-reverse" : ""}`}>
-        {[false, true].map((duplicate) => (
-          <div key={String(duplicate)} className="flex shrink-0 gap-4 pr-4">
-            {items.map((r, i) => renderResult(r, `${duplicate}-${r.name}-${i}`, duplicate))}
-          </div>
-        ))}
-      </div>
-    </div>
+    <ManualCarousel trackClassName={`marquee-track ${reverse ? "marquee-track-reverse" : ""}`}>
+      {[false, true].map((duplicate) => (
+        <div key={String(duplicate)} className="flex shrink-0 gap-4 pr-4">
+          {items.map((r, i) => renderResult(r, `${duplicate}-${r.name}-${i}`, duplicate))}
+        </div>
+      ))}
+    </ManualCarousel>
   );
 
   return (
@@ -358,8 +461,7 @@ export function Teachers() {
           </h2>
         </Reveal>
       </div>
-      <div className="marquee-viewport mt-12">
-        <div className="marquee-track marquee-track-teachers">
+      <ManualCarousel className="mt-12" trackClassName="marquee-track marquee-track-teachers">
           {[false, true].map((duplicate) => (
             <div key={String(duplicate)} className="flex shrink-0 gap-5 pr-5">
               {teacherCards.map(({ teacher, info, image }) => (
@@ -403,8 +505,7 @@ export function Teachers() {
               ))}
             </div>
           ))}
-        </div>
-      </div>
+      </ManualCarousel>
     </section>
   );
 }
@@ -453,8 +554,7 @@ export function Testimonials() {
           <Eyebrow>{t.testimonialsTitle}</Eyebrow>
         </Reveal>
       </div>
-      <div className="marquee-viewport mt-10">
-        <div className="marquee-track marquee-track-reviews">
+      <ManualCarousel className="mt-10" trackClassName="marquee-track marquee-track-reviews">
           {[false, true].map((duplicate) => (
             <div key={String(duplicate)} className="flex shrink-0 gap-4 pr-4">
               {TESTIMONIALS.map((item, i) => {
@@ -490,8 +590,7 @@ export function Testimonials() {
               })}
             </div>
           ))}
-        </div>
-      </div>
+      </ManualCarousel>
     </section>
   );
 }
