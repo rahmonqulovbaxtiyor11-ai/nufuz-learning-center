@@ -15,7 +15,7 @@ import {
 import { useLang } from "@/lib/i18n";
 import { CONTACT, RESULTS, STATS, TEACHERS, TESTIMONIALS } from "@/content/site";
 import { Reveal } from "@/components/site/Reveal";
-import hero from "@/assets/hero-classroom.jpg";
+import hero from "@/assets/nufuz-centre.png";
 import t1 from "@/assets/teacher-1.jpg";
 import t2 from "@/assets/teacher-2.jpg";
 import t3 from "@/assets/teacher-3.jpg";
