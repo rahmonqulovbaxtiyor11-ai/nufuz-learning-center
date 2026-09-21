@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
   Check,
@@ -45,29 +45,72 @@ function ManualCarousel({
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef({ pointerId: -1, startX: 0, startScrollLeft: 0 });
+  const loopWidthRef = useRef(0);
+  const pauseReasonsRef = useRef(new Set<string>());
+  const wheelResumeRef = useRef<number | null>(null);
+  const isReverse = trackClassName.includes("marquee-track-reverse");
 
-  const pauseTrack = () => {
-    if (trackRef.current) trackRef.current.style.animationPlayState = "paused";
-  };
-
-  const resumeTrack = () => {
-    if (trackRef.current) trackRef.current.style.animationPlayState = "";
+  const setPaused = (reason: string, paused: boolean) => {
+    if (paused) pauseReasonsRef.current.add(reason);
+    else pauseReasonsRef.current.delete(reason);
   };
 
   const normalizeScrollPosition = () => {
     const viewport = viewportRef.current;
+    const loopWidth = loopWidthRef.current;
+    if (!viewport || loopWidth <= 0) return;
+
+    while (viewport.scrollLeft < loopWidth) viewport.scrollLeft += loopWidth;
+    while (viewport.scrollLeft >= loopWidth * 2) viewport.scrollLeft -= loopWidth;
+  };
+
+  const measureLoop = () => {
+    const viewport = viewportRef.current;
     const track = trackRef.current;
     if (!viewport || !track) return;
 
-    const loopWidth = track.scrollWidth / 2;
-    if (loopWidth <= viewport.clientWidth) return;
+    const firstGroup = track.firstElementChild;
+    if (!(firstGroup instanceof HTMLElement)) return;
 
-    if (viewport.scrollLeft <= 0) {
-      viewport.scrollLeft += loopWidth;
-    } else if (viewport.scrollLeft >= loopWidth) {
-      viewport.scrollLeft -= loopWidth;
-    }
+    const nextLoopWidth = firstGroup.offsetWidth;
+    loopWidthRef.current = nextLoopWidth;
+    if (nextLoopWidth <= 0) return;
+
+    viewport.scrollLeft = nextLoopWidth;
+    normalizeScrollPosition();
   };
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
+    if (!viewport || !track) return;
+
+    let animationFrame = 0;
+    let previousTime = performance.now();
+    const resizeObserver = new ResizeObserver(measureLoop);
+
+    measureLoop();
+    resizeObserver.observe(track);
+    if (track.firstElementChild) resizeObserver.observe(track.firstElementChild);
+
+    const animate = (time: number) => {
+      const elapsed = Math.min(time - previousTime, 64);
+      previousTime = time;
+      const loopWidth = loopWidthRef.current;
+      if (!pauseReasonsRef.current.size && loopWidth > viewport.clientWidth) {
+        viewport.scrollLeft += (isReverse ? -1 : 1) * (elapsed * 0.028);
+        normalizeScrollPosition();
+      }
+      animationFrame = window.requestAnimationFrame(animate);
+    };
+
+    animationFrame = window.requestAnimationFrame(animate);
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      resizeObserver.disconnect();
+      if (wheelResumeRef.current !== null) window.clearTimeout(wheelResumeRef.current);
+    };
+  }, [isReverse]);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
@@ -81,7 +124,7 @@ function ManualCarousel({
       startScrollLeft: viewport.scrollLeft,
     };
     viewport.setPointerCapture(event.pointerId);
-    pauseTrack();
+    setPaused("pointer", true);
   };
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -101,11 +144,14 @@ function ManualCarousel({
     if (horizontalDelta === 0) return;
 
     event.preventDefault();
-    pauseTrack();
+    setPaused("wheel", true);
     viewport.scrollLeft += horizontalDelta;
     normalizeScrollPosition();
-    window.requestAnimationFrame(normalizeScrollPosition);
-    resumeTrack();
+    if (wheelResumeRef.current !== null) window.clearTimeout(wheelResumeRef.current);
+    wheelResumeRef.current = window.setTimeout(() => {
+      setPaused("wheel", false);
+      wheelResumeRef.current = null;
+    }, 180);
   };
 
   const endDrag = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -117,13 +163,22 @@ function ManualCarousel({
       viewport.releasePointerCapture(event.pointerId);
     }
     dragRef.current.pointerId = -1;
-    resumeTrack();
+    setPaused("pointer", false);
+  };
+
+  const handlePointerEnter = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse") setPaused("hover", true);
+  };
+  const handlePointerLeave = () => {
+    if (dragRef.current.pointerId === -1) setPaused("hover", false);
   };
 
   return (
     <div
       ref={viewportRef}
-      className={`marquee-viewport cursor-grab overflow-x-auto select-none active:cursor-grabbing ${className}`}
+      className={`marquee-viewport min-w-0 cursor-grab select-none active:cursor-grabbing ${className}`}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
@@ -399,9 +454,9 @@ export function Results() {
 
   const renderResultRow = (items: typeof RESULTS, reverse = false) => (
     <ManualCarousel trackClassName={`marquee-track ${reverse ? "marquee-track-reverse" : ""}`}>
-      {[false, true].map((duplicate) => (
-        <div key={String(duplicate)} className="flex shrink-0 gap-4 pr-4">
-          {items.map((r, i) => renderResult(r, `${duplicate}-${r.name}-${i}`, duplicate))}
+      {[0, 1, 2].map((duplicate) => (
+        <div key={duplicate} className="flex shrink-0 gap-4 pr-4">
+          {items.map((r, i) => renderResult(r, `${duplicate}-${r.name}-${i}`, duplicate > 0))}
         </div>
       ))}
     </ManualCarousel>
@@ -462,12 +517,12 @@ export function Teachers() {
         </Reveal>
       </div>
       <ManualCarousel className="mt-12" trackClassName="marquee-track marquee-track-teachers">
-          {[false, true].map((duplicate) => (
-            <div key={String(duplicate)} className="flex shrink-0 gap-5 pr-5">
+          {[0, 1, 2].map((duplicate) => (
+            <div key={duplicate} className="flex shrink-0 gap-5 pr-5">
               {teacherCards.map(({ teacher, info, image }) => (
                 <article
                   key={`${duplicate}-${teacher.key}`}
-                  aria-hidden={duplicate || undefined}
+                  aria-hidden={duplicate > 0 || undefined}
                   className="grid h-[19rem] w-[20rem] shrink-0 grid-cols-[7.5rem_1fr] overflow-hidden rounded-3xl border border-border/70 bg-card shadow-[0_24px_60px_-50px_oklch(0.3_0.06_180/0.8)] sm:h-[18rem] sm:w-[34rem] sm:grid-cols-[12rem_1fr]"
                 >
                   <div className="relative h-full w-full overflow-hidden">
@@ -555,14 +610,14 @@ export function Testimonials() {
         </Reveal>
       </div>
       <ManualCarousel className="mt-10" trackClassName="marquee-track marquee-track-reviews">
-          {[false, true].map((duplicate) => (
-            <div key={String(duplicate)} className="flex shrink-0 gap-4 pr-4">
+          {[0, 1, 2].map((duplicate) => (
+            <div key={duplicate} className="flex shrink-0 gap-4 pr-4">
               {TESTIMONIALS.map((item, i) => {
                 const c = lang === "uz" ? item.uz : item.en;
                 return (
                   <figure
                     key={`${duplicate}-${i}`}
-                    aria-hidden={duplicate || undefined}
+                    aria-hidden={duplicate > 0 || undefined}
                     className="flex h-56 w-[19rem] shrink-0 flex-col rounded-3xl border border-border/70 bg-card p-6 shadow-[0_22px_55px_-50px_oklch(0.3_0.06_180/0.9)] sm:w-[24rem]"
                   >
                     <div className="flex items-center justify-between">

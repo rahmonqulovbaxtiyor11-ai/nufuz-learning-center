@@ -204,32 +204,23 @@
 @layer utilities {
   .marquee-viewport {
     width: 100%;
-    overflow-x: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    touch-action: pan-y;
     mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  }
+
+  .marquee-viewport::-webkit-scrollbar {
+    display: none;
   }
 
   .marquee-track {
     display: flex;
+    min-width: max-content;
     width: max-content;
-    animation: marquee-left 52s linear infinite;
-    will-change: transform;
-  }
-
-  .marquee-track-reverse {
-    animation-direction: reverse;
-  }
-
-  .marquee-track-teachers {
-    animation-duration: 58s;
-  }
-
-  .marquee-track-reviews {
-    animation-duration: 48s;
-  }
-
-  .marquee-viewport:hover .marquee-track,
-  .marquee-viewport:focus-within .marquee-track {
-    animation-play-state: paused;
+    will-change: scroll-position;
   }
 }
 
@@ -237,9 +228,5 @@
   .marquee-viewport {
     overflow-x: auto;
     mask-image: none;
-  }
-
-  .marquee-track {
-    animation: none;
   }
 }
