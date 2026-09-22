@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
   Check,
@@ -45,7 +45,10 @@ function ManualCarousel({
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef({ pointerId: -1, startX: 0, startScrollLeft: 0 });
+  const touchRef = useRef({ active: false, startX: 0, startScrollLeft: 0 });
   const loopWidthRef = useRef(0);
+  const hasMeasuredRef = useRef(false);
+  const measureFrameRef = useRef<number | null>(null);
   const pauseReasonsRef = useRef(new Set<string>());
   const wheelResumeRef = useRef<number | null>(null);
   const isReverse = trackClassName.includes("marquee-track-reverse");
@@ -55,16 +58,16 @@ function ManualCarousel({
     else pauseReasonsRef.current.delete(reason);
   };
 
-  const normalizeScrollPosition = () => {
+  const normalizeScrollPosition = useCallback(() => {
     const viewport = viewportRef.current;
     const loopWidth = loopWidthRef.current;
     if (!viewport || loopWidth <= 0) return;
 
     while (viewport.scrollLeft < loopWidth) viewport.scrollLeft += loopWidth;
     while (viewport.scrollLeft >= loopWidth * 2) viewport.scrollLeft -= loopWidth;
-  };
+  }, []);
 
-  const measureLoop = () => {
+  const measureLoop = useCallback(() => {
     const viewport = viewportRef.current;
     const track = trackRef.current;
     if (!viewport || !track) return;
@@ -72,13 +75,20 @@ function ManualCarousel({
     const firstGroup = track.firstElementChild;
     if (!(firstGroup instanceof HTMLElement)) return;
 
-    const nextLoopWidth = firstGroup.offsetWidth;
+    const secondGroup = firstGroup.nextElementSibling;
+    const nextLoopWidth =
+      secondGroup instanceof HTMLElement
+        ? secondGroup.offsetLeft - firstGroup.offsetLeft
+        : track.scrollWidth / 3;
     loopWidthRef.current = nextLoopWidth;
     if (nextLoopWidth <= 0) return;
 
-    viewport.scrollLeft = nextLoopWidth;
+    if (!hasMeasuredRef.current) {
+      viewport.scrollLeft = nextLoopWidth;
+      hasMeasuredRef.current = true;
+    }
     normalizeScrollPosition();
-  };
+  }, [normalizeScrollPosition]);
 
   useEffect(() => {
     const viewport = viewportRef.current;
@@ -87,11 +97,34 @@ function ManualCarousel({
 
     let animationFrame = 0;
     let previousTime = performance.now();
-    const resizeObserver = new ResizeObserver(measureLoop);
+    const scheduleMeasure = () => {
+      if (measureFrameRef.current !== null) return;
+      measureFrameRef.current = window.requestAnimationFrame(() => {
+        measureFrameRef.current = null;
+        measureLoop();
+      });
+    };
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(scheduleMeasure) : null;
+    const handleVisibilityChange = () => {
+      setPaused("visibility", document.hidden);
+      previousTime = performance.now();
+      if (!document.hidden) scheduleMeasure();
+    };
+    const handleWindowBlur = () => setPaused("focus", true);
+    const handleWindowFocus = () => {
+      setPaused("focus", false);
+      previousTime = performance.now();
+      scheduleMeasure();
+    };
 
-    measureLoop();
-    resizeObserver.observe(track);
-    if (track.firstElementChild) resizeObserver.observe(track.firstElementChild);
+    scheduleMeasure();
+    resizeObserver?.observe(viewport);
+    resizeObserver?.observe(track);
+    window.addEventListener("resize", scheduleMeasure, { passive: true });
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("blur", handleWindowBlur);
+    window.addEventListener("focus", handleWindowFocus);
 
     const animate = (time: number) => {
       const elapsed = Math.min(time - previousTime, 64);
@@ -107,10 +140,15 @@ function ManualCarousel({
     animationFrame = window.requestAnimationFrame(animate);
     return () => {
       window.cancelAnimationFrame(animationFrame);
-      resizeObserver.disconnect();
+      if (measureFrameRef.current !== null) window.cancelAnimationFrame(measureFrameRef.current);
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", scheduleMeasure);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("blur", handleWindowBlur);
+      window.removeEventListener("focus", handleWindowFocus);
       if (wheelResumeRef.current !== null) window.clearTimeout(wheelResumeRef.current);
     };
-  }, [isReverse]);
+  }, [isReverse, measureLoop]);
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === "mouse" && event.button !== 0) return;
@@ -123,7 +161,9 @@ function ManualCarousel({
       startX: event.clientX,
       startScrollLeft: viewport.scrollLeft,
     };
-    viewport.setPointerCapture(event.pointerId);
+    if (typeof viewport.setPointerCapture === "function") {
+      viewport.setPointerCapture(event.pointerId);
+    }
     setPaused("pointer", true);
   };
 
@@ -143,9 +183,11 @@ function ManualCarousel({
     const horizontalDelta = event.deltaX || event.deltaY;
     if (horizontalDelta === 0) return;
 
-    event.preventDefault();
+    if (event.cancelable) event.preventDefault();
     setPaused("wheel", true);
-    viewport.scrollLeft += horizontalDelta;
+    const multiplier =
+      event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? viewport.clientWidth : 1;
+    viewport.scrollLeft += horizontalDelta * multiplier;
     normalizeScrollPosition();
     if (wheelResumeRef.current !== null) window.clearTimeout(wheelResumeRef.current);
     wheelResumeRef.current = window.setTimeout(() => {
@@ -154,12 +196,39 @@ function ManualCarousel({
     }, 180);
   };
 
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    if ("PointerEvent" in window) return;
+    const touch = event.touches[0];
+    const viewport = viewportRef.current;
+    if (!touch || !viewport) return;
+
+    touchRef.current = { active: true, startX: touch.clientX, startScrollLeft: viewport.scrollLeft };
+    setPaused("touch", true);
+  };
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    if ("PointerEvent" in window || !touchRef.current.active) return;
+    const touch = event.touches[0];
+    const viewport = viewportRef.current;
+    if (!touch || !viewport) return;
+
+    if (event.cancelable) event.preventDefault();
+    viewport.scrollLeft = touchRef.current.startScrollLeft - (touch.clientX - touchRef.current.startX);
+    normalizeScrollPosition();
+  };
+
+  const handleTouchEnd = () => {
+    if ("PointerEvent" in window) return;
+    touchRef.current.active = false;
+    setPaused("touch", false);
+  };
+
   const endDrag = (event: React.PointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     const viewport = viewportRef.current;
     if (drag.pointerId !== event.pointerId) return;
 
-    if (viewport?.hasPointerCapture(event.pointerId)) {
+    if (viewport?.hasPointerCapture?.(event.pointerId)) {
       viewport.releasePointerCapture(event.pointerId);
     }
     dragRef.current.pointerId = -1;
@@ -183,6 +252,10 @@ function ManualCarousel({
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
       onWheel={handleWheel}
       onScroll={normalizeScrollPosition}
     >
